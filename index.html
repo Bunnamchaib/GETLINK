@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GET LINK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #0f1729 50%, #1a1f2e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(96, 165, 250, 0.15);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(96, 165, 250, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.1);
+        }
+
+        .label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .label span {
+            color: #60a5fa;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(96, 165, 250, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        textarea::placeholder {
+            color: #475569;
+        }
+
+        .note-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(96, 165, 250, 0.2);
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .note-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .note-input::placeholder {
+            color: #475569;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 12px;
+            padding: 15px 25px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-family: 'Prompt', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #334155;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .preview {
+            margin-top: 20px;
+        }
+
+        .preview-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .link-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(96, 165, 250, 0.1);
+        }
+
+        .link-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .link-list::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 4px;
+        }
+
+        .link-list::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+
+        .link-item {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(96, 165, 250, 0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .link-item:hover {
+            border-color: rgba(96, 165, 250, 0.3);
+            background: rgba(30, 41, 59, 1);
+        }
+
+        .link-number {
+            background: #3b82f6;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.4s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: rgba(34, 197, 94, 0.95);
+            color: white;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-bottom: 20px;
+            color: #475569;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .card {
+                padding: 20px;
+            }
+            .stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GET LINK</h1>
+            <p>ระบบบันทึกลิงก์อัจฉริยะ</p>
+        </div>
+
+        <div class="card">
+            <label class="label">🔗 <span>วางลิงก์ของคุณที่นี่</span> (วางต่อกันได้เลย ระบบจะตัดแยกให้อัตโนมัติ)</label>
+            <textarea id="linkInput" placeholder="เช่น https://s.shopee.co.th/xxxhttps://s.shopee.co.th/yyy...&#10;วางลิงก์ต่อกันได้เลย ไม่ต้องเว้นวรรคหรือขึ้นบรรทัดใหม่"></textarea>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="linkCount">0</div>
+                    <div class="stat-label">จำนวนลิงก์</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="charCount">0</div>
+                    <div class="stat-label">จำนวนตัวอักษร</div>
+                </div>
+            </div>
+
+            <div class="preview" id="previewSection" style="display: none;">
+                <div class="preview-title">📋 ตัวอย่างลิงก์ที่จะบันทึก</div>
+                <div class="link-list" id="linkList"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <label class="label">📝 <span>ใส่โน้ตของคุณถ้ามี</span> (ไม่บังคับ)</label>
+            <input type="text" id="noteInput" class="note-input" placeholder="เช่น ลิงก์สินค้ากลุ่ม A, โปรโมชั่นวันที่ 1 มิ.ย.">
+        </div>
+
+        <button class="btn-submit" id="submitBtn" onclick="submitLinks()">
+            SUBMIT
+        </button>
+
+        <div class="footer">
+            <p>Deploy บน GitHub Pages | ข้อมูลบันทึกลง Google Sheets อัตโนมัติ</p>
+            <p style="margin-top: 8px; color: #3b82f6; font-weight: 500;">🔗 YOUR URL APP: <span id="currentUrl"></span></p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================
+        // ⚠️ แก้ไข URL นี้เป็นของคุณหลัง Deploy Google Apps Script
+        // ============================================
+        const GAS_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+        // วิธีใช้: 
+        // 1. ไปที่ Google Apps Script → Deploy → New Deployment → Web app
+        // 2. Copy URL ที่ได้มาใส่แทน YOUR_SCRIPT_ID ด้านบน
+        // 3. Push ขึ้น GitHub อีกครั้ง
+        // ============================================
+
+        const linkInput = document.getElementById('linkInput');
+        const noteInput = document.getElementById('noteInput');
+        const linkCount = document.getElementById('linkCount');
+        const charCount = document.getElementById('charCount');
+        const previewSection = document.getElementById('previewSection');
+        const linkList = document.getElementById('linkList');
+        const submitBtn = document.getElementById('submitBtn');
+        const toast = document.getElementById('toast');
+
+        // แสดง URL ปัจจุบัน
+        document.getElementById('currentUrl').textContent = window.location.href;
+
+        // ฟังก์ชันแยกลิงก์
+        function extractLinks(text) {
+            if (!text.trim()) return [];
+
+            // รูปแบบที่รองรับ: http://, https://, www.
+            const urlPattern = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+            let matches = text.match(urlPattern) || [];
+
+            // ถ้าไม่เจอรูปแบบปกติ ลองแยกตามโดเมนยอดนิยม
+            if (matches.length === 0) {
+                const domainPattern = /(shopee|lazada|facebook|youtube|tiktok|instagram|twitter|x\.com|line|discord|github|gitlab|bitbucket)[^\s]*/gi;
+                matches = text.match(domainPattern) || [];
+            }
+
+            // กรองเอาเฉพาะที่ไม่ซ้ำ และไม่ว่าง
+            const uniqueLinks = [...new Set(matches.filter(link => link.length > 5))];
+
+            return uniqueLinks;
+        }
+
+        // อัพเดตสถิติและตัวอย่าง
+        function updateStats() {
+            const text = linkInput.value;
+            const links = extractLinks(text);
+
+            linkCount.textContent = links.length;
+            charCount.textContent = text.length;
+
+            if (links.length > 0) {
+                previewSection.style.display = 'block';
+                linkList.innerHTML = links.map((link, index) => `
+                    <div class="link-item">
+                        <div class="link-number">${index + 1}</div>
+                        <div>${escapeHtml(link.length > 80 ? link.substring(0, 80) + '...' : link)}</div>
+                    </div>
+                `).join('');
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Event listeners
+        linkInput.addEventListener('input', updateStats);
+        linkInput.addEventListener('paste', () => {
+            setTimeout(updateStats, 0);
+        });
+
+        // แสดง Toast
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ส่งข้อมูล
+        async function submitLinks() {
+            const text = linkInput.value.trim();
+            const note = noteInput.value.trim();
+            const links = extractLinks(text);
+
+            if (links.length === 0) {
+                showToast('❌ กรุณาใส่ลิงก์อย่างน้อย 1 ลิงก์', 'error');
+                return;
+            }
+
+            // ตรวจสอบว่าเปลี่ยน URL หรือยัง
+            if (GAS_URL.includes('YOUR_SCRIPT_ID')) {
+                showToast('⚠️ กรุณาแก้ไข GAS_URL ในโค้ดก่อนใช้งาน', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> กำลังบันทึก...';
+
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        links: links,
+                        note: note,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                // เนื่องจาก no-cors เราจะถือว่าสำเร็จเสมอถ้าไม่มี error
+                showToast(`✅ บันทึกสำเร็จ! ${links.length} ลิงก์ บันทึกลง Google Sheets แล้ว`);
+
+                // เคลียร์ฟอร์ม
+                linkInput.value = '';
+                noteInput.value = '';
+                updateStats();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'SUBMIT';
+            }
+        }
+
+        // ป้องกันการส่งฟอร์มด้วย Enter ในช่อง Note
+        noteInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitLinks();
+            }
+        });
+    </script>
+</body>
+</html>
