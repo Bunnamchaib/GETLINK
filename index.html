@@ -327,12 +327,12 @@
     <div class="container">
         <div class="header">
             <h1>GET LINK</h1>
-            <p>ระบบบันทึกลิงก์อัจฉริยะ</p>
+            <p>แยกลิงก์สินค้า / ร้านค้า / หมวดหมู่อัตโนมัติ</p>
         </div>
 
         <div class="card">
-            <label class="label">🔗 <span>วางลิงก์ของคุณที่นี่</span> (วางต่อกันได้เลย ระบบจะตัดแยกให้อัตโนมัติ)</label>
-            <textarea id="linkInput" placeholder="เช่น https://s.shopee.co.th/xxxhttps://s.shopee.co.th/yyy...&#10;วางลิงก์ต่อกันได้เลย ไม่ต้องเว้นวรรคหรือขึ้นบรรทัดใหม่"></textarea>
+            <label class="label">🔗 <span>วางลิงก์ของคุณที่นี่</span> (ลิงก์ 1=สินค้า, 2=ร้านค้า, 3=หมวดหมู่, 4-8=สินค้า)</label>
+            <textarea id="linkInput" placeholder="เช่น&#10;https://s.shopee.co.th/xxx&#10;https://shopee.co.th/shop/123&#10;https://shopee.co.th/category/456&#10;https://s.shopee.co.th/yyy"></textarea>
 
             <div class="stats">
                 <div class="stat-item">
@@ -346,7 +346,7 @@
             </div>
 
             <div class="preview" id="previewSection" style="display: none;">
-                <div class="preview-title">📋 ตัวอย่างลิงก์ที่จะบันทึก</div>
+                <div class="preview-title">📋 ตัวอย่างการแยกลิงก์ก่อนบันทึก</div>
                 <div class="link-list" id="linkList"></div>
             </div>
         </div>
@@ -372,7 +372,7 @@
         // ============================================
         // ⚠️ แก้ไข URL นี้เป็นของคุณหลัง Deploy Google Apps Script
         // ============================================
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbw_CQLIaN0RcoegseYB9-LrrAieY8Uw5hrk-XHQSUH_sCMMxMpgZyivivcdjodBKwTp/exec';
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyphKA2qpE4bGRVDKpAZNpQcIcRoj9bWrldE47nrnOfLlEbxP7hdxbyTbaol_w5FcK4/exec';
         // วิธีใช้: 
         // 1. ไปที่ Google Apps Script → Deploy → New Deployment → Web app
         // 2. Copy URL ที่ได้มาใส่แทน YOUR_SCRIPT_ID ด้านบน
@@ -391,24 +391,26 @@
         // แสดง URL ปัจจุบัน
         document.getElementById('currentUrl').textContent = window.location.href;
 
-        // ฟังก์ชันแยกลิงก์
+        // ฟังก์ชันดึงลิงก์จากข้อความ (รองรับลิงก์ที่วางติดกัน)
         function extractLinks(text) {
             if (!text.trim()) return [];
 
-            // รูปแบบที่รองรับ: http://, https://, www.
-            const urlPattern = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
-            let matches = text.match(urlPattern) || [];
+            const normalized = text.replace(/[\r\n\t ]+/g, " ").trim();
+            const urlPattern = /(https?:\/\/.*?(?=https?:\/\/|www\.|$)|www\..*?(?=https?:\/\/|www\.|$))/gi;
+            const matches = normalized.match(urlPattern) || [];
 
-            // ถ้าไม่เจอรูปแบบปกติ ลองแยกตามโดเมนยอดนิยม
-            if (matches.length === 0) {
-                const domainPattern = /(shopee|lazada|facebook|youtube|tiktok|instagram|twitter|x\.com|line|discord|github|gitlab|bitbucket)[^\s]*/gi;
-                matches = text.match(domainPattern) || [];
-            }
+            return matches
+                .map(link => link.trim().replace(/[),.;!?]+$/g, ""))
+                .filter(link => link.length > 8);
+        }
 
-            // กรองเอาเฉพาะที่ไม่ซ้ำ และไม่ว่าง
-            const uniqueLinks = [...new Set(matches.filter(link => link.length > 5))];
-
-            return uniqueLinks;
+        function mapLinksWithType(links) {
+            return links.map((link, index) => {
+                if (index === 0) return { label: 'สินค้า 1', link };
+                if (index === 1) return { label: 'ร้านค้า', link };
+                if (index === 2) return { label: 'หมวดหมู่', link };
+                return { label: `สินค้า ${index - 1}`, link };
+            });
         }
 
         // อัพเดตสถิติและตัวอย่าง
@@ -421,10 +423,15 @@
 
             if (links.length > 0) {
                 previewSection.style.display = 'block';
-                linkList.innerHTML = links.map((link, index) => `
+                const groupedItems = mapLinksWithType(links);
+
+                linkList.innerHTML = groupedItems.map((item, index) => `
                     <div class="link-item">
                         <div class="link-number">${index + 1}</div>
-                        <div>${escapeHtml(link.length > 80 ? link.substring(0, 80) + '...' : link)}</div>
+                        <div>
+                            <strong>${escapeHtml(item.label)}:</strong>
+                            ${escapeHtml(item.link.length > 80 ? item.link.substring(0, 80) + '...' : item.link)}
+                        </div>
                     </div>
                 `).join('');
             } else {
@@ -487,7 +494,8 @@
                     })
                 });
 
-                // เนื่องจาก no-cors เราจะถือว่าสำเร็จเสมอถ้าไม่มี error
+                // เนื่องจาก mode: no-cors จะอ่าน response body ไม่ได้
+                // ถ้า fetch ไม่ throw error ให้ถือว่าส่งข้อมูลถึง GAS แล้ว
                 showToast(`✅ บันทึกสำเร็จ! ${links.length} ลิงก์ บันทึกลง Google Sheets แล้ว`);
 
                 // เคลียร์ฟอร์ม
