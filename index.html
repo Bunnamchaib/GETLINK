@@ -493,9 +493,15 @@
                     return;
                 }
 
-                linkInput.value = clipboardText;
+                const cur = linkInput.value;
+                if (!cur) {
+                    linkInput.value = clipboardText;
+                } else {
+                    const spacer = /\n\s*$/.test(cur) || cur.endsWith('\r\n') ? '' : '\n';
+                    linkInput.value = cur + spacer + clipboardText;
+                }
                 updateStats();
-                showToast('✅ วางข้อความจากคลิปบอร์ดแล้ว');
+                showToast('✅ วางจากคลิปบอร์ดต่อท้ายข้อความเดิมแล้ว');
             } catch (error) {
                 showToast('❌ ไม่สามารถอ่านคลิปบอร์ดได้', 'error');
             }
